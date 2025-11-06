@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="7" passed="7" failed="0" skipped="0">
+  <reporter-output>
+  </reporter-output>
+  <suite started-at="2025-11-05T23:16:01 IST" name="MakeMyTrip Suite" finished-at="2025-11-05T23:17:35 IST" duration-ms="94675">
+    <groups>
+    </groups>
+    <test started-at="2025-11-05T23:16:01 IST" name="Booking Tests" finished-at="2025-11-05T23:17:35 IST" duration-ms="94675">
+      <class name="com.cognizant.makemytrip1.tests.MMTHotelBookingTest">
+        <test-method signature="hotelBooking_TC1()[pri:1, instance:com.cognizant.makemytrip1.tests.MMTHotelBookingTest@1c32386d]" started-at="2025-11-05T23:17:01 IST" name="hotelBooking_TC1" finished-at="2025-11-05T23:17:09 IST" duration-ms="7310" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- hotelBooking_TC1 -->
+      </class> <!-- com.cognizant.makemytrip1.tests.MMTHotelBookingTest -->
+      <class name="com.cognizant.makemytrip1.tests.MMTCarBookingTest">
+        <test-method is-config="true" signature="setupDriver()[pri:0, instance:com.cognizant.makemytrip1.tests.MMTCarBookingTest@49c6c24f]" started-at="2025-11-05T23:15:54 IST" name="setupDriver" finished-at="2025-11-05T23:16:01 IST" duration-ms="7052" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setupDriver -->
+        <test-method signature="cabSearch_TC1()[pri:1, instance:com.cognizant.makemytrip1.tests.MMTCarBookingTest@49c6c24f]" started-at="2025-11-05T23:16:01 IST" name="cabSearch_TC1" finished-at="2025-11-05T23:16:22 IST" duration-ms="20502" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- cabSearch_TC1 -->
+        <test-method signature="cabSearch_TC2()[pri:2, instance:com.cognizant.makemytrip1.tests.MMTCarBookingTest@49c6c24f]" started-at="2025-11-05T23:16:22 IST" name="cabSearch_TC2" finished-at="2025-11-05T23:16:42 IST" duration-ms="19968" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- cabSearch_TC2 -->
+        <test-method signature="cabSearch_TC3()[pri:3, instance:com.cognizant.makemytrip1.tests.MMTCarBookingTest@49c6c24f]" started-at="2025-11-05T23:16:42 IST" name="cabSearch_TC3" finished-at="2025-11-05T23:17:01 IST" duration-ms="19644" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- cabSearch_TC3 -->
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.cognizant.makemytrip1.tests.MMTCarBookingTest@49c6c24f]" started-at="2025-11-05T23:17:36 IST" name="tearDown" finished-at="2025-11-05T23:17:43 IST" duration-ms="6709" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- tearDown -->
+      </class> <!-- com.cognizant.makemytrip1.tests.MMTCarBookingTest -->
+      <class name="com.cognizant.makemytrip1.tests.MMTGiftCardTest">
+        <test-method signature="runGiftCardTest_TC1()[pri:1, instance:com.cognizant.makemytrip1.tests.MMTGiftCardTest@6399551e]" started-at="2025-11-05T23:17:09 IST" name="runGiftCardTest_TC1" finished-at="2025-11-05T23:17:18 IST" duration-ms="9524" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- runGiftCardTest_TC1 -->
+        <test-method signature="runGiftCardTest_TC2()[pri:2, instance:com.cognizant.makemytrip1.tests.MMTGiftCardTest@6399551e]" started-at="2025-11-05T23:17:18 IST" name="runGiftCardTest_TC2" finished-at="2025-11-05T23:17:27 IST" duration-ms="8604" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- runGiftCardTest_TC2 -->
+        <test-method signature="runGiftCardTest_TC3()[pri:3, instance:com.cognizant.makemytrip1.tests.MMTGiftCardTest@6399551e]" started-at="2025-11-05T23:17:27 IST" name="runGiftCardTest_TC3" finished-at="2025-11-05T23:17:35 IST" duration-ms="8623" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- runGiftCardTest_TC3 -->
+      </class> <!-- com.cognizant.makemytrip1.tests.MMTGiftCardTest -->
+    </test> <!-- Booking Tests -->
+  </suite> <!-- MakeMyTrip Suite -->
+</testng-results>
