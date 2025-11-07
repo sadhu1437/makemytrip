@@ -32,8 +32,6 @@ public class Driver {
         
         // --- These options are CRITICAL for Jenkins ---
         options.addArguments("--headless"); // Run browser in the background
-        options.addArguments("--no-sandbox"); // Required for Linux/Docker environments
-        options.addArguments("--disable-dev-shm-usage"); // Prevents out-of-memory errors
         options.addArguments("--window-size=1920,1080"); // FIX: Set a large screen size
         
         // --- Optional but recommended ---
