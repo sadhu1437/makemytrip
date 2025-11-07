@@ -1,12 +1,13 @@
 package com.cognizant.makemytrip1.base;
 
 import java.time.Duration;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.*;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class Driver {
     public static WebDriver driver;
@@ -15,14 +16,27 @@ public class Driver {
 
     @BeforeSuite
     public void setupDriver() {
-        driver = new ChromeDriver(); // Local execution
-        driver.manage().window().maximize();
-        driver.get(url);
+        try {
+            WebDriverManager.chromedriver().setup();
 
-        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@data-cy='closeModal']"))).click();
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--headless=new"); // Use headless mode for Jenkins
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--window-size=1920,1080");
 
-        System.out.println("Browser launched locally and MakeMyTrip homepage opened.");
+            driver = new ChromeDriver(options);
+            driver.get(url);
+
+            wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@data-cy='closeModal']"))).click();
+
+            System.out.println("Browser launched and MakeMyTrip homepage opened.");
+        } catch (Exception e) {
+            System.err.println("Error during WebDriver setup: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @AfterSuite
