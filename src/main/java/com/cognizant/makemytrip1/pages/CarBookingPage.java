@@ -17,11 +17,12 @@ public class CarBookingPage {
     public CarBookingPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        // Use a longer wait for Jenkins, as things can be slower
+        wait = new WebDriverWait(driver, Duration.ofSeconds(20)); 
         js = (JavascriptExecutor) driver;
     }
 
-    // Locators
+    // --- Locators (No Changes) ---
     @FindBy(css = "a[href*='/cabs/']")
     public WebElement cabTab;
 
@@ -67,112 +68,117 @@ public class CarBookingPage {
     @FindBy(className = "cabDetailsCard_price__SHN6W")
     public List<WebElement> carPrices;
 
-    // Utility: Safe click with fallback
-    public void safeClick(WebElement element) {
-        try {
-            wait.until(ExpectedConditions.elementToBeClickable(element));
-            js.executeScript("arguments[0].scrollIntoView(true);", element);
-            element.click();
-        } catch (ElementClickInterceptedException e) {
-            js.executeScript("arguments[0].click();", element);
-        }
-    }
-
-    // Actions
+    // --- Actions (With Fixes) ---
+    
     public void openCabTab() {
-        safeClick(cabTab);
+        wait.until(ExpectedConditions.elementToBeClickable(cabTab)).click();
     }
 
-    public void selectFromCity(String city) throws InterruptedException {
-        safeClick(fromCity);
+    public void selectFromCity(String city) {
+        wait.until(ExpectedConditions.elementToBeClickable(fromCity)).click();
         wait.until(ExpectedConditions.visibilityOf(fromInput)).sendKeys(city);
-        Thread.sleep(5000); // wait for suggestions
-        safeClick(fromSuggestion);
+        
+        // --- FIX ---
+        // Replaced Thread.sleep with an explicit wait for the suggestion to appear
+        wait.until(ExpectedConditions.visibilityOf(fromSuggestion));
+        wait.until(ExpectedConditions.elementToBeClickable(fromSuggestion)).click();
     }
 
-    public void selectToCity(String city) throws InterruptedException {
-        try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@placeholder='To']")));
-            wait.until(ExpectedConditions.visibilityOf(toInput)).sendKeys(city);
-            Thread.sleep(3000);
-            safeClick(toSuggestion);
-        } catch (TimeoutException e) {
-            System.out.println("Retrying To city input after refresh...");
-            driver.navigate().refresh();
-            openCabTab();
-            selectFromCity(city);
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@placeholder='To']")));
-            wait.until(ExpectedConditions.visibilityOf(toInput)).sendKeys(city);
-            Thread.sleep(3000);
-            safeClick(toSuggestion);
-        }
+    public void selectToCity(String city) {
+        // --- FIX ---
+        // Removed the complex try-catch. With proper waits, it's not needed.
+        
+        // Wait for the "To" input field to be ready
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//input[@placeholder='To']")));
+        wait.until(ExpectedConditions.visibilityOf(toInput)).sendKeys(city);
+        
+        // Wait for the suggestion to appear after typing
+        wait.until(ExpectedConditions.visibilityOf(toSuggestion));
+        wait.until(ExpectedConditions.elementToBeClickable(toSuggestion)).click();
     }
 
     public void selectDepartureDate(String date) {
         String dateXpath = "//div[contains(@aria-label, '" + date + "')]";
-        safeClick(departureDate);
+        wait.until(ExpectedConditions.elementToBeClickable(departureDate)).click();
+
+        WebElement dateElement;
         try {
-            WebElement dateElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(dateXpath)));
-            js.executeScript("arguments[0].click();", dateElement);
+            dateElement = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(dateXpath)));
         } catch (Exception e) {
-            System.out.println("Could not find date element: " + dateXpath);
+            System.out.println("Could not find date element with XPath: " + dateXpath);
             throw e;
         }
+        js.executeScript("arguments[0].click()", dateElement);
     }
 
     public void selectPickupTime(String hour, String minute) {
-        safeClick(pickupTime);
-
+        wait.until(ExpectedConditions.elementToBeClickable(pickupTime)).click();
+        
         String formattedHour = String.format("%02d", Integer.parseInt(hour));
+        
         String hourXpath = "//span[normalize-space()='" + formattedHour + " Hr']";
         String minuteXpath = "//li//span[contains(@class, 'minSlotItemChild') and contains(text(), '" + minute + "')]";
+        
+        WebElement hourSelect;
+        try {
+            // Wait for the hour to be present before finding it
+            hourSelect = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(hourXpath)));
+        } catch (NoSuchElementException e) {
+            System.out.println("Could not find hour element with XPath: " + hourXpath);
+            throw e;
+        }
+        
+        js.executeScript("arguments[0].scrollIntoView(true);", hourSelect);
+        js.executeScript("arguments[0].click()", hourSelect);
+        
+        WebElement minuteSelect;
+        try {
+            // Wait for the minute to be present before finding it
+            minuteSelect = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(minuteXpath)));
+        } catch (NoSuchElementException e) {
+            System.out.println("Could not find minute element with XPath: " + minuteXpath);
+            throw e;
+        }
+        
+        js.executeScript("arguments[0].scrollIntoView(true);", minuteSelect);
+        js.executeScript("arguments[0].click()", minuteSelect);
+
+        if (!currencyOverlay.isEmpty()) {
+            try {
+                wait.until(ExpectedConditions.invisibilityOfAllElements(currencyOverlay));
+            } catch (TimeoutException e) {
+                System.out.println("Currency overlay did not disappear. Proceeding anyway.");
+            }
+        }
 
         try {
-            WebElement hourSelect = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(hourXpath)));
-            safeClick(hourSelect);
-
-            WebElement minuteSelect = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(minuteXpath)));
-            safeClick(minuteSelect);
-
-            if (!currencyOverlay.isEmpty()) {
-                try {
-                    wait.until(ExpectedConditions.invisibilityOfAllElements(currencyOverlay));
-                } catch (TimeoutException e) {
-                    System.out.println("Currency overlay did not disappear. Proceeding anyway.");
-                }
-            }
-
-            try {
-                safeClick(meridianSelect);
-            } catch (Exception e) {
-                js.executeScript("arguments[0].click();", meridianSelect);
-            }
-
-            int attempts = 0;
-            while (attempts < 3) {
-                try {
-                    safeClick(applyTime);
-                    break;
-                } catch (Exception e) {
-                    System.out.println("Retrying APPLY click...");
-                    Thread.sleep(1000);
-                    attempts++;
-                }
-            }
-
+            new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(10))
+                .pollingEvery(Duration.ofMillis(500))
+                .ignoring(ElementClickInterceptedException.class)
+                .until(ExpectedConditions.elementToBeClickable(meridianSelect)).click();
         } catch (Exception e) {
-            System.err.println("Error during pickup time selection: " + e.getMessage());
-            throw new RuntimeException(e);
+            js.executeScript("arguments[0].click()", meridianSelect);
         }
+
+        // --- FIX ---
+        // Changed to a JS click. This was the exact spot that caused
+        // ElementClickInterceptedException in your Jenkins logs before.
+        wait.until(ExpectedConditions.elementToBeClickable(applyTime));
+        js.executeScript("arguments[0].click();", applyTime);
     }
 
     public void searchAndFilterSUV() {
-        safeClick(searchButton);
-        safeClick(suvFilter);
+        wait.until(ExpectedConditions.elementToBeClickable(searchButton)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(suvFilter)).click();
     }
 
     public String getLowestFareCar(String from, String to) {
         List<Integer> prices = new ArrayList<>();
+        
+        // Add a wait to make sure the car list has loaded
+        wait.until(ExpectedConditions.visibilityOfAllElements(carPrices));
+        
         for (WebElement ele : carPrices) {
             String p = ele.getText().replace("₹", "").replace(",", "").trim();
             prices.add(Integer.parseInt(p));
@@ -186,7 +192,7 @@ public class CarBookingPage {
                 lowPriceIndex = i;
             }
         }
-
+        
         return "Lowest Cab fare from " + from + " to " + to + " is: " + carNames.get(lowPriceIndex).getText() + " ₹" + min;
     }
 }
